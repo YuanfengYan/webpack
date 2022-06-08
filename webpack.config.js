@@ -7,9 +7,11 @@
  */
 'use strict'
 
-var path = require('path')
-var {VueLoaderPlugin} = require('vue-loader')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
+const path = require('path')
+const {VueLoaderPlugin} = require('vue-loader')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+// 分析包内容
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin; 
 
 
 module.exports = {
@@ -51,7 +53,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: './index.html'
-    })
+    }),
+    // 开启 BundleAnalyzerPlugin 
+    new BundleAnalyzerPlugin(), 
   ]
   
 }
