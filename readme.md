@@ -303,3 +303,47 @@ new BundleAnalyzerPlugin({
 // 运行npm run analyz后打开 127.0.0.1:8888 可以可视化分析包大小信息
 ```
 
+## 7. 项目结构调整
+
+为了项目的完整可持续发展，对项目目录进行调整。为了方便后续调整文件路径以及路径太长，需要配置一个根目录标识
+
+1. 修改webpack.config.js 中的alias参数
+
+```javascript
+module.exports = {
+  // ...
+  resolve: {
+    alias: {
+      '@': path.join(__dirname, 'src')
+    }
+  }
+}
+```
+
+## 9 添加css style sass相关的loder
+
+1. 执行 ` npm install --save-dev css-loader style-loader sass-loader sass
+
+2. 修改 webpack.config.js 配置
+
+``` javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader'
+          }
+        ]
+      }
+    ]
+  }
+}
+
+```
+

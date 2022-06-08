@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 20:46:28
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-08 14:10:52
+ * @LastEditTime: 2022-06-08 15:39:14
  */
 import {
   createRouter,
@@ -19,12 +19,12 @@ const routes =  [
   {
   path: "/",
   name: "index",
-  component:  () => import('./index.vue') 
+  component:  () => import('@/views/index.vue') 
   },
   {
   path: "/about",
   name: "about",
-  component:  () => import('./about.vue') 
+  component:  () => import('@/views/about.vue') 
   }
 ]
 const router = createRouter({

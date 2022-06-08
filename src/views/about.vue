@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-08 14:09:13
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-08 14:09:15
+ * @LastEditTime: 2022-06-08 16:23:57
 -->
 <template>
 <div>
@@ -12,7 +12,6 @@
 </template>
 
 <script>
-console.log('222')
 export default {
   data(){
     return {
@@ -21,3 +20,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss"  scoped>
+@import "./about.scss";
+</style>

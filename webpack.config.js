@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 20:33:24
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-08 10:52:57
+ * @LastEditTime: 2022-06-08 16:34:06
  */
 'use strict'
 
@@ -26,6 +26,12 @@ module.exports = {
     compress: true,//??
     port: 8080
   },
+  
+  resolve: {
+    alias: {
+      '@': path.join(__dirname, 'src')
+    }
+  },
 
   module: {
     rules: [
@@ -46,13 +52,27 @@ module.exports = {
           }
         ]
       },
+      {
+        test:/\.s[ac]ss$/,
+        use:[
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1
+            }
+          },
+          'sass-loader'
+
+        ]
+      }
     ]
   },
   plugins: [
     new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: './index.html'
+      template: './public/index.html'
     }),
     // 开启 BundleAnalyzerPlugin 
     new BundleAnalyzerPlugin(), 
