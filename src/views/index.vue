@@ -3,13 +3,19 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 21:05:34
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-09 14:40:56
+ * @LastEditTime: 2022-06-09 20:14:58
 -->
 
 <template>
 <div>
   <h1>这是首页</h1>
   <div class="divA">123</div>
+  <div class="warp">
+    <img src="../views/images/ai.png" alt=""/>
+    <img src="../views/images/luan.jpeg" alt=""/>
+    <div class="bg1">背景1</div>
+    <div class="bg2">背景2</div>
+  </div>
 </div>
 </template>
 
@@ -34,4 +40,10 @@ export default {
   display: grid;
   color: blue;
 }
+.bg1{
+  width: 100px;
+  height:100px;
+  background-image: url("../views/images/bt.png");
+}
+
 </style>
