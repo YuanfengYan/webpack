@@ -322,9 +322,9 @@ module.exports = {
 
 ## 9 添加css style sass相关的loder
 
-1. 执行 ` npm install --save-dev css-loader style-loader sass-loader sass
+### 1. 执行 ` npm install --save-dev css-loader style-loader sass-loader sass
 
-2. 修改 webpack.config.js 配置
+### 2. 修改 webpack.config.js 配置
 
 ``` javascript
 module.exports = {
@@ -347,3 +347,90 @@ module.exports = {
 
 ```
 
+### 3. 安装postcss-loader 
+
+    功能：不能简单的把 PostCSS 归类成 CSS 预处理或后处理工具。
+    + 1 、CSS 解析成 JavaScript 可以操作的 AST 。 
+    + 2、 就是调用插件来处理 AST 并得到结果。
+  
+  **执行 npm install --save-dev postcss-loader postcss**
+
+<font color="green" size="2">例如1：统一添加厂商前缀添加</font>
+
+  `npm install --save-dev postcss-preset-env`
+
+  ``` diff
+  module.exports = {
+  module: {
+    rules: [
+      //...
+              {
+              test:/\.css$/,
+              use:[
+                {
+                  loader: MiniCssExtractPlugin.loader,
+                  options: {
+                    // 这里可以指定一个 publicPath
+                    // 默认使用 webpackOptions.output中的publicPath
+                    // publicPath的配置，和plugins中设置的filename和chunkFilename的名字有关
+                    // 如果打包后，background属性中的图片显示不出来，请检查publicPath的配置是否有误
+                    publicPath: './',  
+                    // publicPath: devMode ? './' : '../',   // 根据不同环境指定不同的publicPath
+                    // hmr: devMode, // 仅dev环境启用HMR功能
+                  },
+                },
+                "css-loader",
++                'postcss-loader' 
+              ],
+              
+           }
+        ],
+      },
+    ],
+  },
+};
+  ```
+
+  新增 postcss.config.js 配置文件
+
+```javascript
+
+module.exports = {
+  plugins: [
+    [
+      "postcss-preset-env",
+      {
+        autoprefixer:{ grid: true },
+        browsers: 'last 2 versions' //这里很关键，原先是在package.json里面配置browserslist，但好像无效，花了很多时间，一直不知到问题，后面添加了这个就有效了，应该是browserslist配置的有问题。暂时先不研究了。
+      },
+    ],
+  ],
+};
+```
+
+<font color="green" size="2">例如2：</font>
+
+### 4. css提取单独的文件 [mini-css-extract-plugin](https://webpack.docschina.org/plugins/mini-css-extract-plugin/) 
+
+    本插件会将 CSS 提取到单独的文件中，为每个包含 CSS 的 JS 文件创建一个 CSS 文件，并且支持 CSS 和 SourceMaps 的按需加载
+
+1. 安装 `npm install --save-dev mini-css-extract-plugin`
+2. 配置webpack.config.js
+
+```javascript
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+  plugins: [new MiniCssExtractPlugin({
+    // ...配置
+  })],
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
+      },
+    ],
+  },
+};
+```

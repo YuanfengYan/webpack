@@ -13,9 +13,14 @@
   "devDependencies": {
     "@babel/core": "^7.18.2",
     "@babel/preset-env": "^7.18.2",
+    "autoprefixer": "^10.4.7",
     "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
     "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.6.0",
+    "postcss": "^8.3.7",
+    "postcss-loader": "^6.1.1",
+    "postcss-preset-env": "^7.7.1",
     "sass": "^1.52.2",
     "sass-loader": "^13.0.0",
     "style-loader": "^3.3.1",
@@ -27,7 +32,20 @@
     "webpack-dev-server": "^4.9.2"
   },
   "dependencies": {
+    "caniuse-lite": "^1.0.30001351",
     "vue": "^3.2.37",
     "vue-router": "^4.0.13"
+  },
+  "browserslist": {
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ]
   }
 }
