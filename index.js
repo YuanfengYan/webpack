@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 20:46:28
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-08 15:39:14
+ * @LastEditTime: 2022-06-10 11:04:28
  */
 import {
   createRouter,
@@ -14,6 +14,7 @@ import {
 import { createApp } from "vue";
 import App from './app.vue'
 
+import "@/utils/rem.js"
 
 const routes =  [
   {

@@ -18,10 +18,10 @@ module.exports = {
     [
       "postcss-pxtorem",
       {
-        rootValue: 37,//表示根元素字体大小
+        rootValue: 37.5,//表示根元素字体大小
         
         //  unitPrecision: 5,//允许REM单位增长到的十进制数字。
-        propList:['*','!font*'],//类似对正则匹配的设置黑白名单
+        propList:['*'],//类似对正则匹配的设置黑白名单['*','!font*']
         // selectorBlackList:['body'],//设置白名单的标签或者正则匹配到的选择器
         // minPixelValue:1,//设置要替换的最小像素值。
         // mediaQuery:true,//（布尔）允许在媒体查询中转换px。

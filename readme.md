@@ -347,7 +347,7 @@ module.exports = {
 
 ```
 
-### 3. 安装postcss-loader 
+### 3. 安装postcss-loader 以及插件示例（厂商前缀添加、px转rem）
 
     功能：不能简单的把 PostCSS 归类成 CSS 预处理或后处理工具。
     + 1 、CSS 解析成 JavaScript 可以操作的 AST 。 
@@ -410,6 +410,8 @@ module.exports = {
 
 <font color="green" size="2">例如2：统一px转rem 或者可以参考 （链接[postcss-px-to-viewport](https://www.cnblogs.com/zhangnan35/p/12682925.html)）,在淘宝flexible github上说’建议大家开始使用viewport来替代此方。‘</font>
 
+
+
   安装$ `npm install postcss postcss-pxtorem --save-dev`
 
 + 配置postcss.config.js
@@ -437,7 +439,9 @@ module.exports = {
 };
 ```
 
-<font size="2" color="green">其他例子：postcss-sprites（合并雪碧图片）...</font>
+[postcss-petorem使用参考链接](https://blog.csdn.net/weixin_51629637/article/details/124660450)
+
+ <font size="2" color="green">其他例子：postcss-sprites（合并雪碧图片）...</font>
 
 ### 4. css提取单独的文件 [mini-css-extract-plugin](https://webpack.docschina.org/plugins/mini-css-extract-plugin/) 
 
@@ -464,7 +468,7 @@ module.exports = {
 };
 ```
 
-### 10. 资源模块 [官方介绍](https://webpack.js.org/guides/asset-modules/#root)
+## 10. 资源模块 [官方介绍](https://webpack.js.org/guides/asset-modules/#root)
 
 在webpack5之前对于资源加载一般都是 row-loader，url-loader file-loader
 webpack5 拥有asset module type 可以替换4中新的模块类型
