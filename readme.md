@@ -476,6 +476,32 @@ webpack5 拥有asset module type 可以替换4中新的模块类型
 - asset/inline  == url-loader
 - asset/source  ==  row-loader
 - asset
-  
+
+```javascript
+// 
+// ...
+ module: {
+        // noParse: /jquery|lodash/, //可以忽略大型的library可以提高构建性能
+        rules: [
+            {
+                test: /\.(png|jpg|gif|jpeg)(\?[a-z0-9]+)?$/,
+                type: 'asset/resource',
+                parser:{
+                  dataUrlCondition:{
+                    maxSize: 10 * 1024,//小10KB的资源以内联base64的形式（默认）
+                  }
+                }
+            },
+            // ...
+        ]
+ }
+```
 参考[webpack5.0中打包css背景图片生成重复，不能显示的问题考究](https://blog.csdn.net/Coralpapy/article/details/119419137)
 
+## 11. 区分开发环境和生产环境
+
++ 执行 `npm install --save-dev cross-env` cross-env 可以跨平台设置使用环境变量
++ 执行 `npm install --save-dev webpack-merge` webpack-merge可以便捷的合并webpack的配置
+
+将原先的webpack.config.js 拆分到 webpack.common.js 、 webpack.config.dev.js 、 webpack.config.prod.js 
+通过配置package.js中的环境变量执行不同的webpack配置，实现分环境打包
