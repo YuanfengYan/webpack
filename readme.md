@@ -505,3 +505,188 @@ webpack5 拥有asset module type 可以替换4中新的模块类型
 
 将原先的webpack.config.js 拆分到 webpack.common.js 、 webpack.config.dev.js 、 webpack.config.prod.js 
 通过配置package.js中的环境变量执行不同的webpack配置，实现分环境打包
+
+## 12. 打包速度优化
+
++ 1. **设置缓存cache** webpack5 可以通过cache 特性来将webpack工作缓存到硬盘中。存放的路径为node_modules/.cache/webpack
+
+<font color="red" size="3"> 构建速度优化接近90%</font>
+
+webpack5 其实就是内置了插件[HardSourceWebpackPlugin](https://github.com/mzgoddard/hard-source-webpack-plugin)
+
+webpack4如果要使用可以参考文档进行配置 HardSourceWebpackPlugin
+
+webpack3一直使用的是dll的方式进行提取第三方库代码，内置插件DllPlugin和DllReferencePlugin
+
+
+
+```javascript
+// webpack.config.js
+module.exports = { 
+  cache: {
+    // 1. 将缓存类型设置为文件系统
+    type: 'filesystem', // 默认是memory
+    // 2. 将缓存文件夹命名为 .temp_cache,
+    // 默认路径是 node_modules/.cache/webpack
+    cacheDirectory: path.resolve(__dirname, '.temp_cache'),
+    
+  }
+}
+// 没加这个配置build时间：9000ms
+// 加上这个配置后首次build时间： 9700ms
+// 后续重新build时间：765ms
+
+// npm run dev 5486ms => 1312ms
+```
+[参考文档-深度解析webpack5持久化缓存](https://segmentfault.com/a/1190000041726881)
+[参考文档-Webpack 性能系列一: 使用 Cache 提升构建性能](https://zhuanlan.zhihu.com/p/412694420)
+
++ 2. dll 在webpack5出来之后，基本可以不用考虑。即将过时。
+
+
+## 13. 打包后项目的加载优化
+
++ 按需加载
++ 浏览器缓存
++ CDN
+
+1. 按需加载
+
+webpack提供import()语法 动态导入功能进行代码分离，通过按需加载提升网页加载速度
+
+```javascript
+export default function App() {
+  return (
+    <div>
+      hello react 111
+      <Hello />
+      <button onClick={() => import("lodash")}>加载lodash</button>
+    </div>
+  );
+}
+```
+
+2. 浏览器缓存
+
+webpack 支持根据资源内容，创建 hash id，当资源内容发生变化时，将会创建新的 hash id。
+
+```javascript
+// webpack.common.js
+module.exports = {
+  // 输出
+  output: {
+    // 仅在生产环境添加 hash //开发环境不配置原因:开发环境有热更新，如果有hash值的话，会刷新页面
+    filename: ctx.isEnvProduction
+      ? "[name].[contenthash].bundle.js"
+      : "[name].bundle.js",
+  },
+  plugins: [
+    // 提取 CSS
+     new MiniCssExtractPlugin({
+        // 这里的配置和webpackOptions.output中的配置相似
+        // 即可以通过在名字前加路径，来决定打包后的文件存在的路径
+        filename: devMode ? 'css/[name].css' : 'css/[name].[contenthash].css',
+        chunkFilename: devMode ? 'css/[id].css' : 'css/[id].[contenthash].css',
+      }),
+  ],
+};
+
+
+//webpack.prod.js
+module.exports = {
+  optimization: {
+    moduleIds: "deterministic", //
+  },
+};
+
+
+```
+
++ [浅谈 hash、chunkhash 和 contenthash 的区别](https://markdowner.net/skill/215456072994000896)
+
+3. CDN
+
+将所有的静态资源，上传至 CDN，通过 CDN 加速来提升加载速度。
+
+
+```javascript
+export.modules = {
+output: {
+    publicPath: ctx.isEnvProduction ? 'https://xxx.com' : '', // CDN 域名
+  },
+}
+```
+
+## 14.减小打包后体积
+
++ 代码压缩
++ 代码分离
++ CDN
+
+### 1. 代码压缩
+
+#### - js 压缩
+
+使用 [TerserWebpackPlugin](https://webpack.docschina.org/plugins/terser-webpack-plugin/) 来压缩 JavaScript。
+
+webpack5 自带最新的 terser-webpack-plugin，无需手动安装。
+
+terser-webpack-plugin 默认开启了 parallel: true 配置，并发运行的默认数量： os.cpus().length - 1 ，本文配置的 parallel 数量为 4，使用多进程并发运行压缩以提高构建速度。
+
+如果需要自定义配置，还是需要安装 terser-webpack-plugin
+
+` npm install terser-webpack-plugin --save-dev`
+
+```javascript
+const TerserPlugin = require("terser-webpack-plugin");
+
+module.exports = {
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      //...
+    })],
+  },
+};
+
+// ParallelUglifyPlugin 它可以帮助我们多进程压缩 JS，webpack5 的 TerserWebpackPlugin 默认就开启了多进程和缓存，无需再引入 ParallelUglifyPlugin。
+
+```
+
+#### 2. css压缩
+
++ [CssMinimizerWebpackPlugin](https://webpack.docschina.org/plugins/css-minimizer-webpack-plugin/#root)
+
+   执行 `npm install css-minimizer-webpack-plugin --save-dev`
+
+```javascript
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /.s?css$/,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+      },
+    ],
+  },
+  optimization: {
+    minimizer: [
+      // 在 webpack@5 中，你可以使用 `...` 语法来扩展现有的 minimizer（即 `terser-webpack-plugin`），将下一行取消注释
+      // `...`,
+      new CssMinimizerPlugin(),
+    ],
+  },
+  plugins: [new MiniCssExtractPlugin()],
+};
+```
+
+
+#### 2. 代码分离
+
+  代码分离能够把代码分离到不同的 bundle 中，然后可以按需加载或并行加载这些文件。代码分离可以用于获取更小的 bundle，以及控制资源加载优先级，可以缩短页面加载时间。
+
++ 抽离重复代码 [SplitChunksPlugin](https://webpack.docschina.org/plugins/split-chunks-plugin)
+

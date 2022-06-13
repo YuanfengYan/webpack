@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 21:05:34
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-09 20:14:58
+ * @LastEditTime: 2022-06-13 19:54:03
 -->
 
 <template>
@@ -14,7 +14,7 @@
     <img src="../views/images/ai.png" alt=""/>
     <img src="../views/images/luan.jpeg" alt=""/>
     <div class="bg1">背景1</div>
-    <div class="bg2">背景2</div>
+    <div class="bg2">背景132</div>
   </div>
 </div>
 </template>

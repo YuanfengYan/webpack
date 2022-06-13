@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-10 10:56:17
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-10 18:11:46
+ * @LastEditTime: 2022-06-13 20:25:19
  */
 const webpack = require('webpack');
 const path = require('path');
@@ -16,13 +16,21 @@ module.exports = {
     target: 'web', //默认
     // 输出配置
     output: {
-        filename: '[name].js', //'index.js',
+        filename: devMode? '[name].bundle.js':'[name].[contenthash].bundle.js', //'index.js',
         path: path.resolve(__dirname, '../dist'), //本地磁盘目录，用于存储所有输出文件（绝对路径）。
         // publicPath: '/',//'https://staticn.ahaschool.com.cn/', //上载捆绑文件的位置。（相对于服务器根目录）例如 /assets ;或者可以配置cdn地址。
         // hotUpdateChunkFilename: 'assets/js/[id].[chunkhash:8].min.js',// 自定义热更新 chunk 的文件名。
     },
     //页面入口文件配置
     entry: './index.js',
+    cache: {
+      // 1. 将缓存类型设置为文件系统
+      type: 'filesystem', // 默认是memory
+      // 2. 将缓存文件夹命名为 .temp_cache,
+      // 默认路径是 node_modules/.cache/webpack
+      cacheDirectory: path.resolve(__dirname, '.temp_cache'),
+      
+    },
 
     // 解析模块请求的选项
     // （不适用于对 loader 解析）
@@ -110,11 +118,13 @@ module.exports = {
       new MiniCssExtractPlugin({
         // 这里的配置和webpackOptions.output中的配置相似
         // 即可以通过在名字前加路径，来决定打包后的文件存在的路径
-        filename: devMode ? 'css/[name].css' : 'css/[name].[hash].css',
-        chunkFilename: devMode ? 'css/[id].css' : 'css/[id].[hash].css',
+        filename: devMode ? 'css/[name].css' : 'css/[name].[chunkhash].css',
+        // chunkFilename: devMode ? 'css/[id].css' : 'css/[id].[chunkhash].css',
       }),
       // 开启 BundleAnalyzerPlugin 
       // new BundleAnalyzerPlugin(), 
-    ]
+    ],
+
+   
 
 };
