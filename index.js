@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 20:46:28
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-10 11:04:28
+ * @LastEditTime: 2022-06-14 15:56:59
  */
 import {
   createRouter,
@@ -13,7 +13,7 @@ import {
 
 import { createApp } from "vue";
 import App from './app.vue'
-
+import About from '@/views/about.vue'
 import "@/utils/rem.js"
 
 const routes =  [
@@ -25,7 +25,7 @@ const routes =  [
   {
   path: "/about",
   name: "about",
-  component:  () => import('@/views/about.vue') 
+  component:  About
   }
 ]
 const router = createRouter({

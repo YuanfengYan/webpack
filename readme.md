@@ -684,9 +684,177 @@ module.exports = {
 ```
 
 
-#### 2. 代码分离
+### 2. 代码分离
+
+#### 1 抽离重复代码
 
   代码分离能够把代码分离到不同的 bundle 中，然后可以按需加载或并行加载这些文件。代码分离可以用于获取更小的 bundle，以及控制资源加载优先级，可以缩短页面加载时间。
 
-+ 抽离重复代码 [SplitChunksPlugin](https://webpack.docschina.org/plugins/split-chunks-plugin)
++ 抽离重复代码 开箱即用[SplitChunksPlugin](https://webpack.docschina.org/plugins/split-chunks-plugin)
+
+将公共的模块单独打包，不再重复引入，效果如下：
+
+```javascript
+// webpack.prod.js 配置方式如下：
+module.exports = {
+  // ...
+   optimization: {
+      splitChunks: {
+        chunks: 'all',//all,async,initial 三个参数区别参考https://blog.csdn.net/qq_41887214/article/details/124527169
+        minSize: 2000,////当导入的模块最小是多少字节才会进行代码分割
+        // minRemainingSize: 0,
+        minChunks: 1,////当一个模块被导入(引用)至少多少次才对该模块进行代码分割
+        maxAsyncRequests: 30,//按需加载时的最大并行请求数
+        maxInitialRequests: 30,//入口点的最大并行请求数
+        // enforceSizeThreshold: 50000,
+
+        cacheGroups: {//缓存组，这里是我们表演的舞台，抽取公共模块什么的，都在这个地方
+          defaultVendors: {
+            test: /[\\/]node_modules[\\/]/,
+            priority: -10,
+            reuseExistingChunk: true,
+            // name: "defaultVendors",
+            //Webpack 优化分包之 name https://zhuanlan.zhihu.com/p/103729115
+          },
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+            // name: "vendors",
+          },
+        },
+      },
+    },
+}
+
+```
+
+**官方建议name值选择不填，默认是true**
+
+
+#### 2 css文件分离
+
+  MiniCssExtractPlugin 插件将 CSS 提取到单独的文件中，为每个包含 CSS 的 JS 文件创建一个 CSS 文件，并且支持 CSS 和 SourceMaps 的按需加载。
+
+前面已经有提到过改插件的使用
+
+**注意：MiniCssExtractPlugin.loader 要放在 style-loader 后面。**
+
+#### 3 最小化entry chunk
+
+  通过配置 optimization.runtimeChunk = true，为运行时代码创建一个额外的 chunk，减少 entry chunk 体积，提高性能。
+
+```javascript
+
+module.exports = {
+    optimization: {
+        runtimeChunk: true,
+      },
+    };
+}
+```
+
+### 3. Three Shaking (树摇) ---将没有用到的Dead Code 代码不进行打包
+
+
+#### 1. js
+
+  Dead Code 一般具有以下几个特征：
+
+- 代码不会被执行，不可到达；
+- 代码执行的结果不会被用到；
+- 代码只会影响死变量（只写不读）
+
+##### 1 配置package.js "sideEffects"
+
+开启production环境就会自动启动tree shaking即 sideEffects:false(代表所有文件无副作用)
+
+需要注意的是当sideEffect:false时 **这可能会把css / @babel/polyfill （副作用）等文件干掉**
+
+所以一般需要配置一些有副作用的文件，或者后缀
+
+```javascript
+// ...
+"sideEffects": [
+  "**/*.css",
+  "**/*.scss",
+  "./esnext/index.js",
+  "./esnext/configure.js"
+],
+// ...
+
+```
+
+ ##### 2. 对组件库引用的优化
+
+  webpack5 sideEffects 只能清除无副作用的引用，而有副作用的引用则只能通过优化引用方式来进行 Tree Shaking。
+
++ **lodash**
+
+类似 import { throttle } from 'lodash' 就属于有副作用的引用，会将整个 lodash 文件进行打包。
+
+优化方式是使用 import { throttle } from 'lodash-es' 代替 import { throttle } from 'lodash'
+
+lodash-es 将 Lodash 库导出为 ES 模块，支持基于 ES modules 的 tree shaking，实现按需引入。
+
++  **ant-design**
+
+ant-design 默认支持基于 ES modules 的 tree shaking，对于 js 部分，直接引入 import { Button } from 'antd' 就会有按需加载的效果。
+
+假如项目中仅引入少部分组件，import { Button } from 'antd' 也属于有副作用，webpack 不能把其他组件进行 tree-shaking。这时可以缩小引用范围，将引入方式修改为 import { Button } from 'antd/lib/button' 来进一步优化。
+
+
+#### 2. CSS
+
+使用 [purgecss-webpack-plugin](https://github.com/FullHuman/purgecss/tree/main/packages/purgecss-webpack-plugin) 对 CSS Tree Shaking。
+
+[相关配置介绍官网](https://purgecss.com/configuration.html)
+
+[purgeCSS中文文档地址](https://www.purgecss.cn/)
+
+  执行 `npm i purgecss-webpack-plugin -D`
+
+因为打包时 CSS 默认放在 JS 文件内，因此要结合 webpack 分离 CSS 文件插件 mini-css-extract-plugin 一起使用，先将 CSS 文件分离，再进行 CSS Tree Shaking。
+
+``` javascript
+ const PurgeCSSPlugin = require('purgecss-webpack-plugin')//css树摇插件
+ const glob = require("glob")
+ // 获取文件夹绝对路径方法
+const getDirPath=function(dirName){
+  return path.join(__dirname, dirName)
+}
+ const purgeFiles = glob.sync(`${getDirPath("../src")}/**/*`, { nodir: true })
+ purgeFiles.push(path.resolve(__dirname, "../public/index.html"))
+console.log('purgeFilesList',purgeFiles)
+module.exports = {
+  plugins:[
+    // ...
+      new PurgeCSSPlugin({
+        paths: purgeFiles,
+        content: [ `../public/**/*.html`, `../src/**/*.vue` ],
+        defaultExtractor (content) {
+          const contentWithoutStyleBlocks = content.replace(/<style[^]+?<\/style>/gi, '')
+          return contentWithoutStyleBlocks.match(/[A-Za-z0-9-_/:]*[A-Za-z0-9-_/]+/g) || []
+        },
+         safelist: [ /-(leave|enter|appear)(|-(to|from|active))$/, /^(?!(|.*?:)cursor-move).+-move$/, /^router-link(|-exact)-active$/, /data-v-.*/ ],
+      })
+  ]
+}
+
+```
+
+**需要注意的是**：
+ + <font size="4" color="red">1、对应的vue、react在官网有对应的插件配置，不然会树摇掉有用的css.</font>
+ + <font size="4" color="red">2、插件需要配合MiniCssExtractPlugin</font>
+
+
+
+#### 3. CDN
+
+这里单纯为了减小包体积，进行将大的图片、字体等资源压缩上传至CDN来减小服务器压力
+
+另外一种为了加快加载速度的CDN方式在前面已经提到过了
+
+
+
 
