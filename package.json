@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "caniuse-lite": "^1.0.30001351",
+    "dotenv": "^16.0.1",
     "glob": "^8.0.3",
     "lodash": "^4.17.21",
     "vue": "^3.2.37",

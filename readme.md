@@ -856,5 +856,84 @@ module.exports = {
 另外一种为了加快加载速度的CDN方式在前面已经提到过了
 
 
+## 15. 环境变量获取，全局变量设置等webpack工具
+
++ [dotenv](https://www.npmjs.com/package/dotenv)
+
+安装： `npm install dotenv --save`
+
+介绍： 环境变量加载工具
+
+使用：
+
+```javascript
+// .env
+// VUE_APP_BINGMAP_KEYS=ApGt6MdeC3ZVLFu3jwf6vOax4gk4iatUgPeiQuodLXu_PPeWsXRp672eWPMpUpaL
+// VUE_APP_TASERVERURL=199f9f62e86a9048bace6a5eee63a995
 
 
+const dotenv = require('dotenv').config({path:'.env'})
+console.log('process',process) //process.env 对象中会混合.env中定义的变量VUE_APP_BINGMAP_KEYS,VUE_APP_TASERVERURL
+console.log('dotenv',dotenv)//
+// dotenv {
+//   parsed: {
+//     VUE_APP_BINGMAP_KEYS: 'ApGt6MdeC3ZVLFu3jwf6vOax4gk4iatUgPeiQuodLXu_PPeWsXRp672eWPMpUpaL',
+//     VUE_APP_TASERVERURL: '199f9f62e86a9048bace6a5eee63a995'
+//   }
+// }
+```
+
++ [DefinePlugin](https://webpack.js.org/plugins/define-plugin/)
+
+执行：Webpack5自带
+
+介绍： DefinePlugin 允许创建一个在编译时可以配置的全局常量
+
+使用： 
+
+``` javascript
+// 原先记得在项目js中直接可以访问到process.env。但貌似webpack5搭建的项目直接访问是undefined。
+// 原因 webpack5 相较 wp4 取消了内置的 polyfill （如 process 等）
+    new webpack.DefinePlugin({
+        // Definitions...
+        APP_ENV: JSON.stringify(process.env),
+        APP_CUSTON:"我是全局变量"
+      }),
+```
+[浅谈webpack5自动注入环境polyfill的策略](https://blog.csdn.net/qq_21567385/article/details/122672476)文章中介绍了另一种方法，实现项目js中可以访问process, 感觉可行，暂时没试
+
+
++ [ProvidePlugin](https://webpack.docschina.org/plugins/provide-plugin/#root)
+
+执行: Webpack5自带
+
+介绍：webpack配置ProvidePlugin后，在使⽤时将不再需要import和require进⾏引⼊，直接使⽤即可
+
+使用：
+
+```javascript
+// webpack.config.js
+module.export = {
+  // ...
+  plugins: [
+    // ...
+    // 相当于自动require，并且在项目全局可以用别名identifier，进行使用
+    new webpack.ProvidePlugin({
+            api: [path.join(__dirname, '../src/assets/js/utils.js'), 'default'],
+            // identifier: 'module1',
+            // identifier: ['module1', 'property1'],
+    })
+  ]
+}
+
+// xxx.js
+api()//...可以直接使用
+```
+
++ alias  DefinePlugin ProvidePlugin 三者区别
+
+- alias: 只是单纯的别名，可以理解 ：为文件目录配置一个别名
+
+- DefinePlugin： 定义全局变量，应用场景主要是配置不同的环境区别（生产、测试、debug等）
+
+- ProvidePlugin: 提供全局的变量，在模块中使用无需用require引入

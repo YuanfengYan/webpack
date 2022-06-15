@@ -3,13 +3,14 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 21:05:34
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-14 19:05:23
+ * @LastEditTime: 2022-06-15 18:32:37
 -->
 
 <template>
 <div>
   <h1>这是首页2</h1>
   <div class="divA">??{{a}}</div>
+  <!-- <div class="divA">??{{b}}</div> -->
   <div class="warp">
     <img src="../views/images/ai.png" alt=""/>
     <img src="../views/images/luan.jpeg" alt=""/>
@@ -27,14 +28,19 @@ export default {
       name:11
     }
   },
+  mounted(){
+  },
   setup(props) {
     const arr1 = [1,2,3,4]
     let a = lodash.findIndex(arr1,(item)=>{
       return item==2
     })
-    console.log('a',a)
+   
+   
+
     return {
-      a
+      a,
+      // b
     }
   }
 }

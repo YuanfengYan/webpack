@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-07 20:46:28
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-14 15:56:59
+ * @LastEditTime: 2022-06-15 19:01:27
  */
 import {
   createRouter,
@@ -33,5 +33,7 @@ const router = createRouter({
   mode: "hash",
   routes: routes
 });
+
+console.log('a',APP_ENV)
 createApp(App).use(router).mount("#app");
 

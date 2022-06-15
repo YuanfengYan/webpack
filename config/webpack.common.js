@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-10 10:56:17
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-14 19:48:02
+ * @LastEditTime: 2022-06-15 20:08:16
  */
 const webpack = require('webpack');
 const path = require('path');
@@ -20,6 +20,10 @@ const getDirPath=function(dirName){
  const purgeFiles = glob.sync(`${getDirPath("../src")}/**/*`, { nodir: true })
  purgeFiles.push(path.resolve(__dirname, "../public/index.html"))
 console.log('purgeFilesList',purgeFiles)
+
+const dotenv = require('dotenv').config({path:'.env'})
+console.log('process',process)
+console.log('dotenv',dotenv)
 
 module.exports = {
     stats: 'normal', //标准日志打印
@@ -139,6 +143,12 @@ module.exports = {
 
     // 插件
     plugins: [
+      new webpack.DefinePlugin({
+        // Definitions...
+
+        APP_ENV: JSON.stringify(process.env),
+
+      }),
       new VueLoaderPlugin(),
       new HtmlWebpackPlugin({
         filename: 'index.html',
