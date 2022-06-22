@@ -3,11 +3,11 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-08 14:09:13
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-14 19:01:10
+ * @LastEditTime: 2022-06-22 17:20:08
 -->
 <template>
 <div>
-  <h1>这是关于页面1</h1>
+  <h1>这是关于页面1--name:{{name}}</h1>
 </div>
 </template>
 
@@ -17,7 +17,7 @@
 export default {
   data(){
     return {
-      name:11
+      name:'页面'
     }
   }
 }

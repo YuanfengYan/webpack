@@ -543,6 +543,79 @@ module.exports = {
 
 + 2. dll 在webpack5出来之后，基本可以不用考虑。即将过时。
 
++ 3.  **多进程进行构建loader**
+
+通过 thread-loader 将耗时的 loader 放在一个独立的 worker 池中运行，加快 loader 构建速度。
+
+执行`npm i -D thread-loader`
+
+``` javascript
+module.exports = {
+  rules: [
+    {
+      test: /\.module\.(scss|sass)$/,
+      include: paths.appSrc,
+      use: [
+        "style-loader",
+        {
+          loader: "css-loader",
+          options: {
+            modules: true,
+            importLoaders: 2,
+          },
+        },
+        {
+          loader: "postcss-loader",
+          options: {
+            postcssOptions: {
+              plugins: [["postcss-preset-env"]],
+            },
+          },
+        },
+        {
+          loader: "thread-loader",
+          options: {
+            workerParallelJobs: 2,
+            // webpack 官网 提到 node-sass 中有个来自 Node.js 线程池的阻塞线程的 bug。 当使用 thread-loader 时，需要设置 workerParallelJobs: 2。
+          },
+        },
+        "sass-loader",
+      ].filter(Boolean),
+    },
+  ],
+};
+```
+
+**需要注意的是适用于项目较大的项目，小项目没必要，因为启动耗时的时间可能比节省的时间还多**
+
+**happypack happypack 同样是用来设置多线程，但是在 webpack5 就不要再使用 happypack 了，官方也已经不再维护了，推荐使用上文介绍的 thread-loader。**
+
+
+
++ 4. 指定include
+
+  为 loader 指定 include，减少 loader 应用范围，仅应用于最少数量的必要模块，。
+  
+
+```javascript
+module.exports = {
+  rules: [
+    {
+      test: /\.(js|ts|jsx|tsx)$/,
+      include: paths.appSrc,
+      use: [
+        {
+          loader: "esbuild-loader",
+          options: {
+            loader: "tsx",
+            target: "es2015",
+          },
+        },
+      ],
+    },
+  ],
+};
+```
 
 ## 13. 打包后项目的加载优化
 
@@ -937,3 +1010,63 @@ api()//...可以直接使用
 - DefinePlugin： 定义全局变量，应用场景主要是配置不同的环境区别（生产、测试、debug等）
 
 - ProvidePlugin: 提供全局的变量，在模块中使用无需用require引入
+
+
+
+
+## 16. 手写Plugins
+
+## 17. 手写Loader(加载器)
+
+参考文档 --- [揭秘webpack loader](https://zhuanlan.zhihu.com/p/104205895)
+
+Loader概述：
+  webpack 只能直接处理 javascript 格式的代码。任何非 js 文件都必须被预先处理转换为 js 代码，才可以参与打包。loader（加载器）就是这样一个代码转换器。它由 webpack 的 `loader runner` 执行调用，接收原始资源数据作为参数（当多个加载器联合使用时，上一个loader的结果会传入下一个loader），最终输出 javascript 代码（和可选的 source map）给 webpack 做进一步编译。
+
+  个人通俗理解就是加载源文件 字符串，转化为需要的字符串
+
++ 如何创建自定义loader
+
+  - 1. 全局替换字符串 
+
+loader 是一个导出一个函数的 node 模块。
+```javascript
+// webpack.config.js
+module.exports = {
+  // ...
+  module:{
+    rules:[
+       {
+                test: /\.vue$/,
+                use: [
+                  {
+                    loader: 'vue-loader',
+                  },
+                  {
+                    loader:path.resolve(__dirname, "../src/loader/namereplace") // 使用 path 模块找到 hxkj-loader 的路径
+                  },
+                ],
+            },
+    ]
+  }
+}
+// namereplace.js
+module.exports = function(source){
+  var content="";
+  console.log('content1',source)
+  content = source.replace(/页面/g,"「页面」");
+  // console.log('content2',content)
+  return content; 
+}
+
+```
+
+  - 2. 实现style-loader
+
+
+
+
+## 参考文档
+
++ [学习 Webpack5 之路（优化篇）](https://zhuanlan.zhihu.com/p/406222865)
++ [🔥【万字】透过分析 webpack 面试题，构建 webpack5.x 知识体系](https://juejin.cn/post/7023242274876162084)

@@ -1,6 +1,8 @@
 var commonConfig = require('./webpack.common.js');
 const path = require('path');
 const merge = require('webpack-merge');
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const smp = new SpeedMeasurePlugin();
 let webpackConfig = {
   mode:'development',
   devtool: "eval-source-map",
@@ -59,4 +61,7 @@ let webpackConfig = {
       }
   },
 }
-module.exports = merge.merge(commonConfig,webpackConfig)
+console.log()
+let config = merge.merge(commonConfig,webpackConfig)
+// module.exports = smp.wrap({...merge.merge(commonConfig,webpackConfig)})
+module.exports =config//smp.wrap(config)

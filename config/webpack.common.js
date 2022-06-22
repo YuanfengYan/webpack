@@ -3,7 +3,7 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-10 10:56:17
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-15 20:08:16
+ * @LastEditTime: 2022-06-22 17:24:23
  */
 const webpack = require('webpack');
 const path = require('path');
@@ -22,8 +22,8 @@ const getDirPath=function(dirName){
 console.log('purgeFilesList',purgeFiles)
 
 const dotenv = require('dotenv').config({path:'.env'})
-console.log('process',process)
-console.log('dotenv',dotenv)
+// console.log('process',process)
+// console.log('dotenv',dotenv)
 
 module.exports = {
     stats: 'normal', //标准日志打印
@@ -65,6 +65,7 @@ module.exports = {
             {
                 test: /\.(png|jpg|gif|jpeg)(\?[a-z0-9]+)?$/,
                 type: 'asset/resource',
+                exclude: /node_modules/,
                 parser:{
                   dataUrlCondition:{
                     maxSize: 10 * 1024,//小10KB的资源以内联base64的形式（默认）
@@ -79,6 +80,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
+                // include: ,
                 use: [
                     {
                         loader: 'babel-loader',
@@ -88,9 +90,12 @@ module.exports = {
             {
                 test: /\.vue$/,
                 use: [
-                    {
-                        loader: 'vue-loader',
-                    },
+                  {
+                    loader: 'vue-loader',
+                  },
+                  {
+                    loader:path.resolve(__dirname, "../src/loader/namereplace") // 使用 path 模块找到 hxkj-loader 的路径
+                  },
                 ],
             },
             {
@@ -143,9 +148,9 @@ module.exports = {
 
     // 插件
     plugins: [
+      // 设置全局变量
       new webpack.DefinePlugin({
         // Definitions...
-
         APP_ENV: JSON.stringify(process.env),
 
       }),
@@ -154,13 +159,14 @@ module.exports = {
         filename: 'index.html',
         template: './public/index.html'
       }),
-      
+      // css提取
       new MiniCssExtractPlugin({
         // 这里的配置和webpackOptions.output中的配置相似
         // 即可以通过在名字前加路径，来决定打包后的文件存在的路径
         filename: devMode ? 'css/[name].css' : 'css/[name].[chunkhash].css',
         // chunkFilename: devMode ? 'css/[id].css' : 'css/[id].[chunkhash].css',
       }),
+      // css树摇
       new PurgeCSSPlugin({
         paths: purgeFiles,
         content: [ `../public/**/*.html`, `../src/**/*.vue` ],

@@ -3,10 +3,10 @@
  * @Author: yanyuanfeng
  * @Date: 2022-06-10 10:56:02
  * @LastEditors: yanyuanfeng
- * @LastEditTime: 2022-06-15 10:28:14
+ * @LastEditTime: 2022-06-16 17:31:25
  */
 var commonConfig = require('./webpack.common.js');
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");//css压缩
 const TerserPlugin = require("terser-webpack-plugin"); //js压缩
 const path = require('path');
 
