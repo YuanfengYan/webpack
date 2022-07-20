@@ -231,6 +231,7 @@ module.exports = {
   "presets": ["@babel/preset-env"]
 }
 ```
+[参考--谈谈babel的preset-env](https://blog.csdn.net/seveneagleline/article/details/107745575)
 
 
 ****
@@ -580,7 +581,7 @@ module.exports = {
           },
         },
         "sass-loader",
-      ].filter(Boolean),
+      ].filter(Boolean),//过滤掉为undefined的plugin
     },
   ],
 };
@@ -692,9 +693,9 @@ output: {
 
 ## 14.减小打包后体积
 
-+ 代码压缩
-+ 代码分离
-+ CDN
++ 代码压缩 js压缩\  css压缩
++ 代码分离 css分离\ js抽离公共\ entry chunk
++ 树摇 cdn
 
 ### 1. 代码压缩
 
@@ -724,6 +725,26 @@ module.exports = {
 
 // ParallelUglifyPlugin 它可以帮助我们多进程压缩 JS，webpack5 的 TerserWebpackPlugin 默认就开启了多进程和缓存，无需再引入 ParallelUglifyPlugin。
 
+```
+
++ compression-webpack-plugin [compression-webpack-plugin](https://webpack.js.org/plugins/compression-webpack-plugin/#root)
+
+   是否开启Gzip压缩。nginx上需要对Gzip进行相关配置
+
+   [参考文档](https://blog.csdn.net/weixin_42662753/article/details/122538615s)
+
+```javascript
+const CompressionWebpackPlugin = require("compression-webpack-plugin");
+
+plugins: [
+  new CompressionPlugin({
+      filename: "[path][base].gz",
+      algorithm: "gzip",
+      test: /\.js$|\.css$|\.html$/,
+      threshold: 10240,
+      minRatio: 0.8,
+    }),
+  ],
 ```
 
 #### 2. css压缩
