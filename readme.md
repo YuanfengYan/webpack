@@ -509,7 +509,7 @@ webpack5 拥有asset module type 可以替换4中新的模块类型
 
 ## 12. 打包速度优化
 
-+ 1. **设置缓存cache** webpack5 可以通过cache 特性来将webpack工作缓存到硬盘中。存放的路径为node_modules/.cache/webpack
+###  1. **设置缓存cache** webpack5 可以通过cache 特性来将webpack工作缓存到硬盘中。存放的路径为node_modules/.cache/webpack
 
 <font color="red" size="3"> 构建速度优化接近90%</font>
 
@@ -542,9 +542,9 @@ module.exports = {
 [参考文档-深度解析webpack5持久化缓存](https://segmentfault.com/a/1190000041726881)
 [参考文档-Webpack 性能系列一: 使用 Cache 提升构建性能](https://zhuanlan.zhihu.com/p/412694420)
 
-+ 2. dll 在webpack5出来之后，基本可以不用考虑。即将过时。
+###  2. dll 在webpack5出来之后，基本可以不用考虑。即将过时。
 
-+ 3.  **多进程进行构建loader**
+### 3.  **多进程进行构建loader**
 
 通过 thread-loader 将耗时的 loader 放在一个独立的 worker 池中运行，加快 loader 构建速度。
 
@@ -623,8 +623,11 @@ module.exports = {
 + 按需加载
 + 浏览器缓存
 + CDN
++ [webpack5修行之道】第16篇：性能优化-externals](https://blog.csdn.net/j178202798/article/details/117443143)
 
-1. 按需加载
+
+
+### 1. 按需加载
 
 webpack提供import()语法 动态导入功能进行代码分离，通过按需加载提升网页加载速度
 
@@ -640,7 +643,7 @@ export default function App() {
 }
 ```
 
-2. 浏览器缓存
+### 2. 浏览器缓存
 
 webpack 支持根据资源内容，创建 hash id，当资源内容发生变化时，将会创建新的 hash id。
 
@@ -678,7 +681,7 @@ module.exports = {
 
 + [浅谈 hash、chunkhash 和 contenthash 的区别](https://markdowner.net/skill/215456072994000896)
 
-3. CDN
+### 3. CDN
 
 将所有的静态资源，上传至 CDN，通过 CDN 加速来提升加载速度。
 
@@ -690,6 +693,11 @@ output: {
   },
 }
 ```
+
+### 4. externals  
+
+- [webpack5修行之道】第16篇：性能优化-externals](https://blog.csdn.net/j178202798/article/details/117443143)
+
 
 ## 14.减小打包后体积
 
@@ -1085,6 +1093,9 @@ module.exports = function(source){
   - 2. 实现style-loader
 
 
+#  打包多页面项目
+
+## 1.
 
 
 ## 参考文档
